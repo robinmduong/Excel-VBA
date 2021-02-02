@@ -1,0 +1,62 @@
+'Asks for folder location. Once you select a folder, it will run the code on all files within the folder
+'In this example, the script find sand replaces all instances of HTML inside all Excel files within a specified folder
+'(bul) is replaced nothing, &trade; is replaced with the trademark symbol, and &quot is replaced with a double-quote
+'Also removes any straggling single carats (< or >)
+
+Sub AllWorkbooks()
+   Dim MyFolder As String 'Path collected from the folder picker dialog
+   Dim MyFile As String 'Filename obtained by DIR function
+   Dim wbk As Workbook 'Used to loop through each workbook
+On Error Resume Next
+Application.ScreenUpdating = False
+'Opens the folder picker dialog to allow user selection
+With Application.FileDialog(msoFileDialogFolderPicker)
+.Title = "Please select a folder"
+.Show
+.AllowMultiSelect = False
+   If .SelectedItems.Count = 0 Then 'If no folder is selected, abort
+MsgBox "You did not select a folder"
+      Exit Sub
+   End If
+MyFolder = .SelectedItems(1) & "\" 'Assign selected folder to MyFolder
+End With
+myfile = Dir(MyFolder) 'DIR gets the first file of the folder
+'Loop through all files in a folder until DIR cannot find anymore
+Do While MyFile <> ""
+   'Opens the file and assigns to the wbk variable for future use
+   Set wbk = Workbooks.Open(fileName:=MyFolder & MyFile)
+   'Replace the line below with the statements you would want your macro to perform
+Sheets(2).Range("a1").Value = 60
+wbk.Close savechanges:=True
+MyFile = Dir 'DIR gets the next file in the folder
+Loop
+Application.ScreenUpdating = True
+End Sub
+        '...
+        'YOUR CODE HERE
+        
+        Dim sht As Worksheet
+        Dim fndList As Variant
+        Dim rplcList As Variant
+        Dim x As Long
+        
+        fndList = Array("&quot;", "&trade;", "(bul)", "<*>", "<", ">")
+        rplcList = Array("""", "™", "", "", "", "")
+        
+        'Loop through each item in Array lists
+          For x = LBound(fndList) To UBound(fndList)
+            'Loop through each worksheet in ActiveWorkbook
+              For Each sht In ActiveWorkbook.Worksheets
+                sht.Cells.Replace What:=fndList(x), Replacement:=rplcList(x), _
+                  LookAt:=xlPart, SearchOrder:=xlByRows, MatchCase:=False, _
+                  SearchFormat:=False, ReplaceFormat:=False
+              Next sht
+          
+          Next x
+        
+        '...
+    End If
+Next
+
+
+End Sub
