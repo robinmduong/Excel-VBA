@@ -32,8 +32,9 @@ MyFile = Dir 'DIR gets the next file in the folder
 Loop
 Application.ScreenUpdating = True
 End Sub
+
         '...
-        'YOUR CODE HERE
+        'PLACE YOUR CODE HERE
         
         Dim sht As Worksheet
         Dim fndList As Variant
@@ -54,7 +55,9 @@ End Sub
           
           Next x
         
+        'END OF YOUR CODE
         '...
+
     End If
 Next
 
