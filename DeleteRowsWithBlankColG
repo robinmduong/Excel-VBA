@@ -1,0 +1,30 @@
+'Delete all rows with a blank value in column G
+'First version of code, needs to be modified before we can import data from QBO to NetSuite
+Sub DeleteRowsWithoutValueInColumnG()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    
+    Application.ScreenUpdating = False
+    
+    ' Iterate through each sheet in the active workbook
+    For Each ws In ThisWorkbook.Sheets
+        If InStr(1, ws.Name, "Summary", vbTextCompare) = 0 And InStr(1, ws.Name, "Code", vbTextCompare) = 0 Then
+            ' Find the last used row in column G
+            lastRow = ws.Cells(ws.Rows.Count, "G").End(xlUp).Row
+            
+            ' Loop through each row in reverse order
+            For i = lastRow To 1 Step -1
+                ' Check if column G in the current row is empty
+                If ws.Cells(i, "G").Value = "" Then
+                    ' Delete the entire row if column G is empty
+                    ws.Rows(i).Delete
+                End If
+            Next i
+        End If
+    Next ws
+    
+    Application.ScreenUpdating = True
+    MsgBox ("Done")
+End Sub
+
