@@ -6,20 +6,20 @@ Sub ConcatenateAndCopyValues()
     Dim ignoreSheets As String
     Dim r As Range
     Set r = ActiveSheet.Range("A1:Z100")
-    
+
     Application.ScreenUpdating = False
     
     ' Sheets to ignore (separated by comma)
     ignoreSheets = "Summary, Code"
     
-    ' Iterate through each sheet in the active workbook
+    ' Iterate through each sheet in active workbook
     For Each ws In ThisWorkbook.Sheets
     
         ' Check if the sheet name contains the words "Summary" or "Code"
         If InStr(1, ws.Name, "Summary", vbTextCompare) = 0 And InStr(1, ws.Name, "Code", vbTextCompare) = 0 Then
         
-            ' Find the last used row in column G
-            lastRow = ws.Cells(ws.Rows.Count, "G").End(xlUp).Row
+            ' Find the last used row in column F
+            lastRow = ws.Cells(ws.Rows.Count, "F").End(xlUp).Row
             
             ' Loop through each row in reverse order
             For i = lastRow To 1 Step -1
@@ -43,17 +43,16 @@ Sub ConcatenateAndCopyValues()
                     ' Delete the entire row
                     ws.Rows(i).Delete
                 End If
-                
             Next i
         End If
-        
-        ' Delete the total rows and any rows below
         
     Next ws
     
     Application.ScreenUpdating = True
     MsgBox "Done"
 End Sub
+
+'-----------------------------------
 
 'CHANGES TO VERSION 4 OF THE CODE:
 'the previous version worked well, but new instructions were added:
