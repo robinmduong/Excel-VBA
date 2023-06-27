@@ -1,0 +1,34 @@
+'Copies data from a spreadsheet named Yesterday to a spreadsheet named Today. Carry over notes column from the Today Data sheet to the Today tab.
+
+Sub FormatRawData()
+
+'Declare variables
+
+Dim Old_Detail As Worksheet: Set Old_Detail = ThisWorkbook.Sheets("Yesterday")
+Dim Raw As Worksheet: Set Raw = ThisWorkbook.Sheets("Today Data")
+Dim Detail As Worksheet: Set Detail = ThisWorkbook.Sheets("Today")
+Dim LastRow As Long
+
+'Copy raw workbook into the formatted tab
+Detail.Cells.Delete
+Raw.Cells.Copy Destination:=Detail.Range("A1")
+
+'Get rid of merges
+Raw.Cells.UnMerge
+Detail.Cells.UnMerge
+Old_Detail.Cells.UnMerge
+
+'Unhide columns
+Old_Detail.Cells.Range("G:K").EntireColumn.Hidden = False
+Detail.Cells.Range("G:K").EntireColumn.Hidden = False
+
+'Carry over previous notes
+
+LastRow = Detail.Range("W1000000").End(xlUp).Row
+Detail.Range("AS19").Value = "Notes"
+Detail.Range("AS20:AS" & LastRow).FormulaR1C1 = "=XLOOKUP(RC[-36],Yesterday!C[-36],Yesterday!C)"
+Detail.Range("AS20:AS" & LastRow) = Detail.Range("AS20:AS" & LastRow).Value
+
+
+End Sub
+
