@@ -1,0 +1,31 @@
+Sub Large_Transactions()
+    Dim strSearch As String
+    Dim aCell As Range
+    Dim colNum As Long
+    
+    'Find the column number from its name'
+
+    strSearch = "Amount"
+
+    Set aCell = Sheet1.Rows(1).Find(What:=strSearch, LookIn:=xlValues, _
+    LookAt:=xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, _
+    MatchCase:=False, SearchFormat:=False)
+
+    If Not aCell Is Nothing Then
+        colNum = aCell.Column
+        'MsgBox "Value Found in Cell " & aCell.Address & _
+        " and the Cell Column Number is " & colNum'
+    Else
+        MsgBox "Error, could not find string with a value of " & strSearch
+    End If
+    Columns(colNum).NumberFormat = "0.00"
+
+
+    'Add a filter to the spreadsheet'
+    Range("A1:Z100000").AutoFilter Field:=colNum, Criteria1:=">=3000", Operator:=xlOr, Criteria2:="<=-3000"
+
+
+End Sub
+
+
+
