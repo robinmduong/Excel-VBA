@@ -47,10 +47,33 @@ Sub ConcatenateAndCopyValues()
         End If
         
     Next ws
-    
     Application.ScreenUpdating = True
-    MsgBox "Done"
-End Sub
+    
+  End Sub
+  
+'Source: Ablebits.com - https://www.ablebits.com/office-addins-blog/remove-duplicates-within-cell-excel/'
+'Added a column where each cell manually calls the function below to remove duplicate strings'
+Function RemoveDupeWords(text As String, Optional delimiter As String = " ") As String
+  Dim dictionary As Object
+  Dim x, part
+
+  Set dictionary = CreateObject("Scripting.Dictionary")
+  dictionary.CompareMode = vbTextCompare
+  For Each x In Split(text, delimiter)
+    part = Trim(x)
+    If part <> "" And Not dictionary.Exists(part) Then
+      dictionary.Add part, Nothing
+    End If
+  Next
+
+  If dictionary.Count > 0 Then
+    RemoveDupeWords = Join(dictionary.keys, delimiter)
+  Else
+    RemoveDupeWords = ""
+  End If
+
+  Set dictionary = Nothing
+End Function
 
 '-----------------------------------
 
