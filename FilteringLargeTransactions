@@ -27,5 +27,7 @@ Sub Large_Transactions()
 
 End Sub
 
+'Note: this code currently doesn't account for the need to apply "Convert to Number" to the "Amount" column'
+
 
 
