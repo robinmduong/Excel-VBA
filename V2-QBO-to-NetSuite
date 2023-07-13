@@ -1,0 +1,129 @@
+'Updates from V1: File had a different format, so columns had to be adjusted.'
+
+Sub ConcatenateAndCopyValues()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    Dim tempValue As String
+    Dim ignoreSheets As String
+    Dim r As Range
+    Set r = ActiveSheet.Range("A1:Z5000")
+
+    Application.ScreenUpdating = False
+    
+    ' Sheets to ignore (separated by comma)
+    ignoreSheets = "Summary, Code"
+    
+    ' Iterate through each sheet in active workbook
+    For Each ws In ThisWorkbook.Sheets
+    
+        ' Check if the sheet name contains the words "Summary" or "Code"
+        If InStr(1, ws.Name, "Summary", vbTextCompare) = 0 And InStr(1, ws.Name, "Code", vbTextCompare) = 0 Then
+        
+            ' Find the last used row in column J
+            lastRow = ws.Cells(ws.Rows.Count, "N").End(xlUp).Row
+            
+            ' Loop through each row in reverse order
+            For i = lastRow To 1 Step -1
+                ' Delete total rows because they're the only rows with numerical values in both cols N and O, and col D (date) is empty
+                If (ws.Cells(i, "N").Value <> "" And ws.Cells(i, "O").Value <> "") Or (ws.Cells(i, "N").Value = "" And ws.Cells(i, "O").Value = "") Then
+                    ws.Rows(i).Delete
+                End If
+                ' If cells D, E, F, G, or H are empty, grab the value from the cell above
+                If ws.Cells(i, "D").Value = "" Then
+                    ws.Cells(i, "D").Value = ws.Cells(i - 1, "D").Value
+                End If
+                If ws.Cells(i, "E").Value = "" Then
+                    ws.Cells(i, "E").Value = ws.Cells(i - 1, "E").Value
+                End If
+                If ws.Cells(i, "F").Value = "" Then
+                    ws.Cells(i, "F").Value = ws.Cells(i - 1, "F").Value
+                End If
+                If ws.Cells(i, "G").Value = "" Then
+                    ws.Cells(i, "G").Value = ws.Cells(i - 1, "G").Value
+                End If
+                If ws.Cells(i, "H").Value = "" Then
+                    ws.Cells(i, "H").Value = ws.Cells(i - 1, "H").Value
+                End If
+            
+                ' Concatenate the values of cells E, F, G, H (Description)
+                ' Jeannie's notes: Memo/Description: Transaction Type, Number, Name (don't include Date)
+                tempValue = "Transaction Type: " & ws.Cells(i, "E").Value & _
+                            " / Num: " & ws.Cells(i, "F").Value & " / Name: " & ws.Cells(i, "G").Value & _
+                            " / Notes: " & ws.Cells(i, "H").Value
+                ' Check if cell H (Description) is empty and cells E, F, G are empty, and there is a value in cell H
+                If ws.Cells(i, "H").Value = "" And Application.CountA(ws.Range("E" & i & ":G" & i)) = 0 And _
+                    (ws.Cells(i, "H").Value <> "") Then
+                    '(ws.Cells(i, "E").Value <> "" Or ws.Cells(i, "F").Value <> "") Or ws.Cells(i,"G").Value <> "") Then
+                    ' Copy the value from the row above to the current cell in column F
+                    ws.Cells(i, "H").Value = ws.Cells(i - 1, "H").Value
+                End If
+            
+                ' Set the value in cell H (description) to the concatenated value
+                ws.Cells(i, "H").Value = tempValue
+                
+                ' Check if the entire row is empty or if column F (Description) is empty. If so, delete the entire row.
+                ' This will also delete the "Total" rows
+                If Application.CountA(ws.Rows(i)) = 0 Or ws.Cells(i, "H").Value = "" Then
+                    ws.Rows(i).Delete
+                End If
+            Next i
+        End If
+   Next ws
+Application.ScreenUpdating = True
+    
+  End Sub
+  
+Function RemoveDupeWords(text As String, Optional delimiter As String = " ") As String
+  Dim dictionary As Object
+  Dim x, part
+
+  Set dictionary = CreateObject("Scripting.Dictionary")
+  dictionary.CompareMode = vbTextCompare
+  For Each x In Split(text, delimiter)
+    part = Trim(x)
+    If part <> "" And Not dictionary.Exists(part) Then
+      dictionary.Add part, Nothing
+    End If
+  Next
+
+  If dictionary.Count > 0 Then
+    RemoveDupeWords = Join(dictionary.keys, delimiter)
+  Else
+    RemoveDupeWords = ""
+  End If
+
+  Set dictionary = Nothing
+End Function
+
+'-----------------------------------
+
+'CHANGES TO VERSION 4 OF THE CODE:
+'the previous version worked well, but new instructions were added:
+
+'Pseudocode:
+'Go through each spreadsheet
+'If the spreadsheet’s name contains the word “Summary” or “Code”, then ignore it
+'Go through each line of the code in the remaining spreadsheets
+'Concatenate the following:
+'“Date: “
+'A Column
+'“ / Transaction Type: “
+'B Col
+'“ / Num: “
+'C Col
+'“ / Name: “
+'D Col
+'“ / Notes: “
+'F Col
+'Place the concatenated value into the F column cell
+'Make sure your code doesn’t have an error because of self-referencing cell F
+'If cell F is empty, and there are no values in cells B, C, D, E, or F, and there is a value in cell G -or- in cell H, then copy the value in cell F in the row above to the current cell F
+'
+'
+'Delete all rows without a value in Cell F
+'OUTSIDE the loops, have a MsgBox print a completion message
+'MsgBox (“Done”)
+'
+
+
